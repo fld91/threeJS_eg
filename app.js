@@ -8,37 +8,47 @@ class App{
 		const container = document.createElement( 'div' );
 		document.body.appendChild( container );
         
-		this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 100 );
-		this.camera.position.set( 0, 0, 4 );
+        this.clock = new THREE.Clock();
         
+		this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
+		
 		this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color( 0xaaaaaa );
-
-		const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.3);
-		this.scene.add(ambient);
         
-        const light = new THREE.DirectionalLight();
-        light.position.set( 0.2, 1, 1);
-        this.scene.add(light);
+		this.scene.add( new THREE.HemisphereLight( 0x606060, 0x404040 ) );
+
+        const light = new THREE.DirectionalLight( 0xffffff );
+        light.position.set( 1, 1, 1 ).normalize();
+		this.scene.add( light );
 			
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
+        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        
 		container.appendChild( this.renderer.domElement );
-		
-        const geometry = new THREE.SphereBufferGeometry();
-        const material = new THREE.MeshStandardMaterial( { color: 0x34123a});
-
-        this.mesh = new THREE.Mesh( geometry, material );
         
-        this.scene.add(this.mesh);
+        this.controls = new OrbitControls( this.camera, this.renderer.domElement );
+        this.controls.target.set(0, 3.5, 0);
+        this.controls.update();
         
-        const controls = new OrbitControls( this.camera, this.renderer.domElement );
+        this.stats = new Stats();
+        document.body.appendChild( this.stats.dom );
         
-        this.renderer.setAnimationLoop(this.render.bind(this));
-    
+        this.initScene();
+        this.setupXR();
+        
         window.addEventListener('resize', this.resize.bind(this) );
 	}	
+    
+    initScene(){
+        this.geometry = new THREE.BoxBufferGeometry( 0.06, 0.06, 0.06 ); 
+        this.meshes = [];
+    }
+    
+    setupXR(){
+        
+        this.renderer.setAnimationLoop( this.render.bind(this) );
+    }
     
     resize(){
         this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -47,7 +57,8 @@ class App{
     }
     
 	render( ) {   
-        this.mesh.rotateY( 0.01 );
+        this.stats.update();
+        this.meshes.forEach( (mesh) => { mesh.rotateY( 0.01 ); });
         this.renderer.render( this.scene, this.camera );
     }
 }
