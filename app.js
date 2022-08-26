@@ -3,6 +3,7 @@ import { VRButton } from './jsm/VRButton.js';
 import { BoxLineGeometry } from './jsm/BoxLineGeometry.js';
 import { Stats } from './jsm/stats.module.js';
 import { OrbitControls } from './jsm/OrbitControls.js';
+import { ARButton } from './ARButton.js';
 class App{
 	constructor(){
 		const container = document.createElement( 'div' );
